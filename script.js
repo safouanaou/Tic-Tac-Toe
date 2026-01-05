@@ -30,7 +30,11 @@ const GameController = (()=>{
     //let player_two = prompt("enter player two name: ") 
     const playerOne = player("apah", 'X');
     const playerTwo = player("paaah", 'O');
-    const players = [playerOne, playerTwo]
+    const players = [playerOne, playerTwo];
+    let currentPlayerIndex = 0;
+    let winner = "";
+
+
 
     const checkWinner = () => {
 
@@ -38,7 +42,6 @@ const GameController = (()=>{
         const winCombos = [[0,1,2],[0,3,6],[0,4,8],[1,4,7],[2,5,8],[2,4,6],[3,4,5],[6,7,8]];
         let board = GameBoard.getBoard();
         let R = []
-        let text = "";
 
         winCombos.forEach(combo => {
             let vals = []
@@ -54,10 +57,10 @@ const GameController = (()=>{
 
         R.forEach(arr => {
             if(arr.length == 3 && arr.every(val => val === 'X')){
-                text = "winner is player 1";
+                winner = playerOne.name
             }
             else if (arr.length == 3 && arr.every(val => val === 'O')){
-                text = "winner is player 2";
+                winner = playerTwo.name
             }
         })
 
@@ -76,29 +79,27 @@ const GameController = (()=>{
             console.log(`winner is ${winner.name}`);
         }
         */
-        
-        return text;
 
     };
 
-    let currentPlayerIdex = 0
+    const getWinner = () => winner;
 
 
     const playRound = (index) => {
+            if (!winner){
+                const switchTurn = () => currentPlayerIndex = currentPlayerIndex === 0 ? 1 : 0;
+                GameBoard.placeMarker(index, players[currentPlayerIndex].marker)
+                //checkWinner();
+                switchTurn();
+            }
 
-         const switchTurn = () => currentPlayerIdex = currentPlayerIdex === 0 ? 1 : 0;
-        console.log(`the game has started\n it's ${players[currentPlayerIdex].name}'s turn: `)
-        //let play = prompt("choose a column: ");
-        GameBoard.placeMarker(index, players[currentPlayerIdex].marker)
-        console.log(GameBoard.getBoard())
-        checkWinner();
-        switchTurn();
-    }
+
+        }
 
 
 
      return {
-        playRound
+        playRound, checkWinner, getWinner
     }
     
 })();
@@ -106,12 +107,26 @@ const GameController = (()=>{
 
 const DisplayController = (()=>{
     const gamebox = document.querySelector(".gamebox");
- 
-   gamebox.addEventListener('click', (e)=> {
-        if (e.target.classList.contains('box')){
+    const restartBtn = document.getElementById("restart");
+    const winnertext = document.getElementById("winner-text");
+
+    gamebox.addEventListener('click', (e)=>{
+            const index = Array.from(gamebox.children).indexOf(e.target)
+            GameController.playRound(index)
+            e.target.innerText = GameBoard.getBoard()[index]
+            GameController.checkWinner()
+            const winner = GameController.getWinner();
+            if(winner){
+                winnertext.innerText = `the winner is${winner}`;
+                restartBtn.style.display = "block";
+            }
             
-        }
-    })
 
+        
+        })
 
+        
+    
+    
 })();
+
