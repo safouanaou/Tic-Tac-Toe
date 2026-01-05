@@ -26,35 +26,59 @@ const player = (name, marker) => {
 
 
 const GameController = (()=>{
-    let player_one = prompt("enter player one name: ")
-    let player_two = prompt("enter player two name: ") 
-    const playerOne = player(player_one, 'X');
-    const playerTwo = player(player_two, 'O');
+    //let player_one = prompt("enter player one name: ")
+    //let player_two = prompt("enter player two name: ") 
+    const playerOne = player("apah", 'X');
+    const playerTwo = player("paaah", 'O');
     const players = [playerOne, playerTwo]
 
     const checkWinner = () => {
-        const winnerCheckArray = [[0,1,2],[0,3,6],[0,4,8],[1,4,7],[2,5,8],[2,4,6],[3,4,5],[6,7,8]];
-        let arrayCheck = [];
 
-        const f = (arr) => {
-            if(arr.every(val => val === arr[0])){
-                return 1;
-            }
-            else return 0;
-        }
+        //understand why this method is inefficient 
+        const winCombos = [[0,1,2],[0,3,6],[0,4,8],[1,4,7],[2,5,8],[2,4,6],[3,4,5],[6,7,8]];
+        let board = GameBoard.getBoard();
+        let R = []
+        let text = "";
 
-        winnerCheckArray.forEach(line => {
-            line.forEach(col => {
-                arrayCheck.push(GameBoard.getBoard()[col])
+        winCombos.forEach(combo => {
+            let vals = []
+            combo.forEach(num => {
+                if(board[num] !== ""){ //reconsider ??
+                    vals.push(board[num])
+                }
             })
-
-            if(arrayCheck.every(val => val === arrayCheck[0])){
-                console.log("winner")
-            }
+            R.push(vals)
             
         })
 
+
+        R.forEach(arr => {
+            if(arr.length == 3 && arr.every(val => val === 'X')){
+                text = "winner is player 1";
+            }
+            else if (arr.length == 3 && arr.every(val => val === 'O')){
+                text = "winner is player 2";
+            }
+        })
+
+        /**
+            A BETTER METHOD USING DESTRUCTURING  
+
+        const winningCombo = winCombos.find(combo => {
+            const [a, b, c] = combo;
+            // Check if first cell is not empty, and if it matches the other two
+            return board[a] && board[a] === board[b] && board[a] === board[c];
+        });
+
+        if (winningCombo) {
+            const winnerMarker = board[winningCombo[0]];
+            const winner = players.find(p => p.marker === winnerMarker);
+            console.log(`winner is ${winner.name}`);
+        }
+        */
         
+        return text;
+
     };
 
     let currentPlayerIdex = 0
@@ -67,9 +91,11 @@ const GameController = (()=>{
         //let play = prompt("choose a column: ");
         GameBoard.placeMarker(index, players[currentPlayerIdex].marker)
         console.log(GameBoard.getBoard())
-        checkWinner()
+        checkWinner();
         switchTurn();
     }
+
+
 
      return {
         playRound
@@ -78,3 +104,14 @@ const GameController = (()=>{
 })();
 
 
+const DisplayController = (()=>{
+    const gamebox = document.querySelector(".gamebox");
+ 
+   gamebox.addEventListener('click', (e)=> {
+        if (e.target.classList.contains('box')){
+            
+        }
+    })
+
+
+})();
